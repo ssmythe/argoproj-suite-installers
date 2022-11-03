@@ -8,10 +8,13 @@ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/st
 echo "* sleeping 20 seconds to let things warm up"
 sleep 20
 
-echo "* installing argocd cli"
-# only run block if argocd not installed
-curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+if [[ ! -f "/usr/local/bin/argocd" ]]; then
+    echo "* installing argocd cli (as root)"
+    curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+    sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+else
+    echo "* installing argocd cli - skipping, already installed"
+fi
 
 echo "* patching argocd-server"
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'

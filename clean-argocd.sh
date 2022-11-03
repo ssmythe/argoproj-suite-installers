@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 
+
+if [[ -f "argocd-linux-amd64" ]]; then
+    echo "* removing current directory argocd cli"
+    rm -f argocd-linux-amd64
+fi
+
+if [[ -f "/usr/local/bin/argocd" ]]; then
+    echo "* removing installed argocd cli (as root)"
+    sudo rm -f /usr/local/bin/argocd
+fi
+
 echo "* killing port forwarding to argocd ui"
 pid=$(ps -ef | grep port-forward | grep argocd-server | cut -d" " -f 3)
 [[ ${pid} ]] && kill ${pid}

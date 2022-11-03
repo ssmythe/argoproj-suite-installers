@@ -17,11 +17,11 @@ fi
 echo "* patching argocd-server"
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
 
+echo "* waiting for argocd-server to warm up"
+kubectl rollout status deploy/argocd-server
+
 echo "* port forwarding for svc/argocd-server (localhost:8081)"
 kubectl port-forward svc/argocd-server -n argocd 8081:443 2>&1 1>/dev/null &
-
-echo "* sleeping 30 seconds to let things warm up"
-sleep 30
 
 echo "* argocd admin password"
 export ARGOCD_ADMIN_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
@@ -33,4 +33,6 @@ echo "* logging in to argocd with admin and the above password"
 argocd login --insecure localhost --username admin --password ${ARGOCD_ADMIN_PASSWORD}
 
 echo "* login to argocd UI with admin and the following password"
-echo "${ARGOCD_ADMIN_PASSWORD}"
+echo "https://localhost:8081"
+echo "username: admin"
+echo "password: ${ARGOCD_ADMIN_PASSWORD}"

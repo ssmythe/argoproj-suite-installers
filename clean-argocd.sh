@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-
-if [[ -f "argocd-linux-amd64" ]]; then
-    echo "* removing current directory argocd cli"
-    rm -f argocd-linux-amd64
-fi
-
 if [[ -f "/usr/local/bin/argocd" ]]; then
     echo "* removing installed argocd cli (as root)"
     sudo rm -f /usr/local/bin/argocd
@@ -15,10 +9,7 @@ echo "* killing port forwarding to argocd ui"
 pid=$(ps -ef | grep port-forward | grep argocd-server | cut -d" " -f 3)
 [[ ${pid} ]] && kill ${pid}
 
-# echo "* deleting all objects"
-# kubectl delete deployments,services,pods,daemonset,jobs --all
-
-echo "* deleting ns/argocd ... NOTE: this will take a little while"
+echo "* deleting ns/argocd ... Note: this will take a little while"
 argocdns=$(kubectl get ns | grep argocd)
 [[ ${argocdns} ]] && kubectl delete ns/argocd
 
